@@ -11,47 +11,48 @@ app.use(express.json());
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.i2wvmgk.mongodb.net/?retryWrites=true&w=majority`;
 
 const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverApi: ServerApiVersion.v1,
+	useNewUrlParser: true,
+	useUnifiedTopology: true,
+	serverApi: ServerApiVersion.v1,
 });
 
 async function run() {
-  try {
-    const serviceCollection = client.db("dentistJishan").collection("services");
-    const reviewCollection = client.db("dentistJishan").collection("allReview");
+	try {
+		const serviceCollection = client.db("dentistJishan").collection("services");
+		const reviewCollection = client.db("dentistJishan").collection("reviews");
 
-    app.get("/services", async (req, res) => {
-      const query = {};
-      const cursor = serviceCollection.find(query);
-      const services = await cursor.limit(3).toArray();
-      res.send(services);
-    });
-    app.get("/services/seeall", async (req, res) => {
-      const query = {};
-      const cursor = serviceCollection.find(query);
-      const seeall = await cursor.toArray();
-      res.send(seeall);
-    });
-    app.get("/services/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: ObjectId(id) };
-      const service = await serviceCollection.findOne(query);
-      res.send(service);
-    });
-    app.post("/addreview", async (req, res) => {
-      const allReview = req.body;
-      console.log(allReview);
-    });
-  } finally {
-  }
+		app.get("/services", async (req, res) => {
+			const query = {};
+			const cursor = serviceCollection.find(query);
+			const services = await cursor.limit(3).toArray();
+			res.send(services);
+		});
+		app.get("/services/seeall", async (req, res) => {
+			const query = {};
+			const cursor = serviceCollection.find(query);
+			const seeall = await cursor.toArray();
+			res.send(seeall);
+		});
+		app.get("/services/:id", async (req, res) => {
+			const id = req.params.id;
+			const query = { _id: ObjectId(id) };
+			const service = await serviceCollection.findOne(query);
+			res.send(service);
+		});
+		app.post("/reviews", async (req, res) => {
+			const review = req.body;
+			const result = await serviceCollection.insertOne(review);
+			res.send(result);
+		});
+	} finally {
+	}
 }
 run().catch((err) => console.error(err));
 
 app.get("/", (req, res) => {
-  res.send("assignment 11 project server is running");
+	res.send("assignment 11 project server is running");
 });
 
 app.listen(port, () => {
-  console.log(`assignment 11 project server is running on port ${port}`);
+	console.log(`assignment 11 project server is running on port ${port}`);
 });
