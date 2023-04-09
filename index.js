@@ -48,9 +48,9 @@ async function run() {
     });
     app.post("/addservice", async (req, res) => {
       const service = req.body;
-      console.log(service);
       const result = await serviceCollection.insertOne(service);
-      console.log(result);
+      res.send(result)
+      console.log(result)
     });
 
     app.get("/services", async (req, res) => {
@@ -72,7 +72,7 @@ async function run() {
       res.send(service);
     });
 
-    app.get("/reviews", verifyJWT, async (req, res) => {
+    app.get("/reviews", async (req, res) => {
       //   console.log(req.headers.authorization);
       let query = {};
       if (req.query.email) {
@@ -80,7 +80,7 @@ async function run() {
           email: req.query.email,
         };
       }
-      const cursor = reviewCollection.find(query);
+      const cursor = await reviewCollection.find(query);
       const reviews = await cursor.toArray();
       res.send(reviews);
     });
